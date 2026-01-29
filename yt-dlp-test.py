@@ -15,9 +15,9 @@ def download_transcripts_for_videos(playlist_url):
         'writesubtitles': True,
         'writeautomaticsub': True,
         "subtitleslangs": ["en"],
-        'subtitlesformat': 'json3',
+        'subtitlesformat': 'vtt',
 
-        'outtmpl': str(out_path / "%(playlist_title)s/%(title)s [%(id)s].%(ext)s"),
+        'outtmpl': str(out_path / "%(uploader)s - %(playlist_title)s/%(title)s [%(id)s].%(ext)s"),
 
         "yesplaylist": True,
 
@@ -34,6 +34,6 @@ def download_transcripts_for_videos(playlist_url):
 
 
 if __name__ == "__main__":
-    playlist_url = "https://www.youtube.com/playlist?list=PLlDdLy-1g17ZQlKROSatxk7uGovsBwQ8p"
+    playlist_url = input("Enter the YouTube playlist URL: ").strip()
     stats = download_transcripts_for_videos(playlist_url)
     print("Download complete.")
