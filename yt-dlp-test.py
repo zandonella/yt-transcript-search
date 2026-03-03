@@ -36,7 +36,7 @@ def download_transcripts_for_videos(playlist_url):
 if __name__ == "__main__":
     directory = input("Enter a directory to save transcripts: ").strip()
     if directory:
-        TRANSCRIPT_DIR = Path("transcripts") / directory
+        TRANSCRIPT_DIR = Path(directory)
         TRANSCRIPT_DIR.mkdir(exist_ok=True)
     playlist_url = input("Enter the YouTube playlist URL: ").strip()
     stats = download_transcripts_for_videos(playlist_url)
