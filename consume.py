@@ -140,7 +140,7 @@ if __name__ == "__main__":
     name = input("Enter the name of the collection: ")
     
     # Elasticsearch setup
-    INDEX_NAME = "podcast_transcripts" + name.replace(" ", "_").lower()
+    INDEX_NAME = "transcript_" + name.replace(" ", "_").lower()
     if not client.indices.exists(index=INDEX_NAME):
         client.indices.create(index=INDEX_NAME, body={
             "settings": {
