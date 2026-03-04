@@ -84,7 +84,14 @@ def seconds_to_ts(seconds: float) -> str:
     ms = ms_total % 1000
     return f"{hh:02d}:{mm:02d}:{ss:02d}.{ms:03d}"
 
-def chunk_captions(captions, max_s = 30, overlap_s = 10):
+def clean_text(text):
+    # Remove any leading/trailing whitespace
+    text = text.strip()
+    # Remove any extra whitespace
+    text = text.replace("\n", " ").replace("\r", " ")
+    return text
+
+def chunk_captions(captions, max_s = 30, overlap_s = 5):
     """Chunks captions into segments of max_s seconds, with overlap_s seconds of overlap"""
     chunks = []
     current_chunk = []
@@ -106,12 +113,13 @@ def chunk_captions(captions, max_s = 30, overlap_s = 10):
             current_chunk_end = max(current_chunk_end, caption_end_s)
         else:
             # chunk is full, save it and start a new one with overlap
+            strings = [clean_text(c.text) for c in current_chunk]
             chunk = {
                 "start_time": seconds_to_ts(current_chunk_start),
                 "end_time": seconds_to_ts(current_chunk_end),
                 "start_seconds": current_chunk_start,
                 "end_seconds": current_chunk_end,
-                "text": "\n".join(c.text for c in current_chunk)
+                "text": " ".join(strings)
             }
             
             chunks.append(chunk)
@@ -120,16 +128,22 @@ def chunk_captions(captions, max_s = 30, overlap_s = 10):
             if current_chunk_start < 0:
                 current_chunk_start = 0.0
             current_chunk_end = caption_end_s
-            current_chunk = [caption]
+            new_starting_chunk = []
+            for c in current_chunk:
+                if ts_to_seconds(c.end) > current_chunk_start:
+                    new_starting_chunk.append(c)
+                    
+            current_chunk = new_starting_chunk + [caption]
 
     # add the final chunk if it exists
     if current_chunk:
+        strings = [clean_text(c.text) for c in current_chunk]
         chunk = {
             "start_time": seconds_to_ts(current_chunk_start),
             "end_time": seconds_to_ts(current_chunk_end),
             "start_seconds": current_chunk_start,
             "end_seconds": current_chunk_end,
-            "text": "\n".join(c.text for c in current_chunk)
+            "text": " ".join(strings)
         }
         chunks.append(chunk)
 
@@ -181,6 +195,11 @@ if __name__ == "__main__":
                 
         captions = list(webvtt.from_string(fixed_subtitle))
         chunks = chunk_captions(captions)
+        print(f"Chunked into {len(chunks)} segments")
+        print("chunks:")
+        for chunk in chunks:
+            print(f"  Start: {chunk['start_time']}, End: {chunk['end_time']}")
+            print(f"  Text: {chunk['text']}\n")
         actions = []
         for chunk in chunks:
             action = {
