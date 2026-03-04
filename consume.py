@@ -6,7 +6,7 @@ import webvtt
 from pathlib import Path
 
 from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk, scan
+from elasticsearch.helpers import bulk
 client = Elasticsearch('http://localhost:9200')
 
 def fix_youtube_vtt(vtt_file_path) -> str:
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     name = input("Enter the name of the collection: ")
     
     # Elasticsearch setup
-    INDEX_NAME = "transcript_" + name.replace(" ", "_").lower()
+    INDEX_NAME = name.replace(" ", "_").lower()
     if not client.indices.exists(index=INDEX_NAME):
         client.indices.create(index=INDEX_NAME, body={
             "settings": {
