@@ -20,7 +20,7 @@ if __name__ == "__main__":
     
     response = search_transcripts(query, index_name)
     
-    print(f"Total hits: {response['hits']['total']['value']}")
+    print(f"Total documents including the query: {len(response['hits']['hits'])}")
     for hit in response['hits']['hits']:
         print(f"Video ID: {hit['_source']['video_id']}, Start Time: {hit['_source']['start_time']}, End Time: {hit['_source']['end_time']}")
         print(f"Text: {hit['_source']['text']}\n")
