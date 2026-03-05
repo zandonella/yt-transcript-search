@@ -1,26 +1,52 @@
-from elasticsearch import Elasticsearch
-client = Elasticsearch('http://localhost:9200')
+from dotenv import load_dotenv
+import os
 
-def search_transcripts(query, index_name):
+load_dotenv()
+
+from elasticsearch import Elasticsearch
+
+client = Elasticsearch(
+    hosts=[os.getenv("ELASTICSEARCH_URL")], api_key=os.getenv("ELASTIC_API_KEY")
+)
+
+
+def search_transcripts(query, index_name, size=10):
     search_body = {
+        "size": size,
         "query": {
-            "match": {
-                "text": query
+            "bool": {
+                "should": [
+                    # Exact phrase on unstemmed field — highest signal
+                    {"match_phrase": {"text.exact": {"query": query, "boost": 4}}},
+                    # Phrase on stemmed field — good for morphological variants
+                    {"match_phrase": {"text": {"query": query, "boost": 2}}},
+                    # Bag of words fallback — recall
+                    {
+                        "match": {
+                            "text": {"query": query, "fuzziness": "AUTO", "boost": 1}
+                        }
+                    },
+                ]
             }
-        }
+        },
     }
-    
+
     response = client.search(index=index_name, body=search_body)
-    return response
+    hits = response["hits"]["hits"]
+    return hits
 
 
 if __name__ == "__main__":
     index_name = input("Enter the name of the Elasticsearch index to search: ")
     query = input("Enter your search query: ")
-    
-    response = search_transcripts(query, index_name)
-    
-    print(f"Total documents including the query: {len(response['hits']['hits'])}")
-    for hit in response['hits']['hits']:
-        print(f"Video ID: {hit['_source']['video_id']}, Start Time: {hit['_source']['start_time']}, End Time: {hit['_source']['end_time']}")
-        print(f"Text: {hit['_source']['text']}\n")
+
+    results = search_transcripts(query, index_name)
+
+    print(f"Total documents including the query: {len(results)}")
+    for hit in results:
+        src = hit["_source"]
+        t = int(src["start_seconds"])
+        url = f"https://youtube.com/watch?v={src['video_id']}&t={t}s"
+        print(f"[{hit['_score']:.2f}] {src['video_id']} @ {src['start_time']}")
+        print(f"URL: {url}")
+        print(f"Text: {src['text']}\n")
