@@ -4,15 +4,19 @@ import os
 load_dotenv()
 
 from elasticsearch import Elasticsearch
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
 
 client = Elasticsearch(
     hosts=[os.getenv("ELASTICSEARCH_URL")], api_key=os.getenv("ELASTIC_API_KEY")
 )
 
 
-def search_transcripts(query, index_name, size=10):
+def search_transcripts(query, index_name, size=30):
     search_body = {
         "size": size,
+        "explain": True,
         "query": {
             "bool": {
                 "should": [
@@ -33,20 +37,51 @@ def search_transcripts(query, index_name, size=10):
 
     response = client.search(index=index_name, body=search_body)
     hits = response["hits"]["hits"]
-    return hits
-
-
-if __name__ == "__main__":
-    index_name = input("Enter the name of the Elasticsearch index to search: ")
-    query = input("Enter your search query: ")
-
-    results = search_transcripts(query, index_name)
-
-    print(f"Total documents including the query: {len(results)}")
-    for hit in results:
+    results = []
+    for hit in hits:
         src = hit["_source"]
         t = int(src["start_seconds"])
         url = f"https://youtube.com/watch?v={src['video_id']}&t={t}s"
-        print(f"[{hit['_score']:.2f}] {src['video_id']} @ {src['start_time']}")
-        print(f"URL: {url}")
-        print(f"Text: {src['text']}\n")
+        results.append(
+            {
+                "score": hit["_score"],
+                "video_id": src["video_id"],
+                "start_time": src["start_time"],
+                "end_time": src["end_time"],
+                "start_seconds": src["start_seconds"],
+                "end_seconds": src["end_seconds"],
+                "text": src["text"],
+                "url": url,
+            }
+        )
+    return results
+
+
+@app.get("/search")
+def search():
+    query = request.args.get("q", "").strip()
+    index_name = request.args.get("index", "").strip()
+    size = request.args.get("size", default=30, type=int)
+
+    if not query:
+        return jsonify({"error": "Missing query parameter: q"}), 400
+
+    if not index_name:
+        return jsonify({"error": "Missing query parameter: index"}), 400
+
+    try:
+        results = search_transcripts(query, index_name, size=size)
+        return jsonify(
+            {
+                "query": query,
+                "index": index_name,
+                "count": len(results),
+                "results": results,
+            }
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+if __name__ == "__main__":
+    app.run()
