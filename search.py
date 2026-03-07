@@ -5,8 +5,10 @@ load_dotenv()
 
 from elasticsearch import Elasticsearch
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/search": {"origins": "http://localhost:5173"}})
 
 client = Elasticsearch(
     hosts=[os.getenv("ELASTICSEARCH_URL")], api_key=os.getenv("ELASTIC_API_KEY")
