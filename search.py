@@ -15,24 +15,46 @@ client = Elasticsearch(
 )
 
 
-def search_transcripts(query, index_name, size=30):
-    search_body = {
+def build_search_query(query, size):
+    query_terms = query.split()
+    is_short_query = len(query_terms) <= 3
+
+    default_clauses = [
+        # Exact phrase on unstemmed field
+        {"match_phrase": {"text.exact": {"query": query, "boost": 5}}},
+        # Phrase on stemmed field
+        {"match_phrase": {"text": {"query": query, "slop": 2, "boost": 3}}},
+        # Match title exact phrase
+        {"match_phrase": {"video_title": {"query": query, "boost": 2.5}}},
+        # Match title bag of words
+        {"match": {"video_title": {"query": query, "operator": "or", "boost": 1.2}}},
+    ]
+
+    if is_short_query:
+        # For short queries, also add a bag-of-words match on the text to increase recall
+        default_clauses.append(
+            {"match": {"text": {"query": query, "operator": "and", "boost": 1.5}}}
+        )
+    else:
+        default_clauses.append(
+            {
+                "match": {
+                    "text": {
+                        "query": query,
+                        "minimum_should_match": "75%",
+                        "boost": 1.2,
+                    }
+                }
+            }
+        )
+
+    return {
         "size": size,
         "explain": True,
         "query": {
             "bool": {
-                "should": [
-                    # Exact phrase on unstemmed field — highest signal
-                    {"match_phrase": {"text.exact": {"query": query, "boost": 4}}},
-                    # Phrase on stemmed field — good for morphological variants
-                    {"match_phrase": {"text": {"query": query, "boost": 2}}},
-                    # Bag of words fallback — recall
-                    {
-                        "match": {
-                            "text": {"query": query, "fuzziness": "AUTO", "boost": 1}
-                        }
-                    },
-                ]
+                "should": default_clauses,
+                "minimum_should_match": 1,
             }
         },
         "highlight": {
@@ -42,10 +64,15 @@ def search_transcripts(query, index_name, size=30):
                 "text": {
                     "number_of_fragments": 1,
                     "fragment_size": 160,
-                }
+                },
+                "video_title": {},
             },
         },
     }
+
+
+def search_transcripts(query, index_name, size=30):
+    search_body = build_search_query(query, size)
 
     response = client.search(index=index_name, body=search_body)
     hits = response["hits"]["hits"]
@@ -59,6 +86,10 @@ def search_transcripts(query, index_name, size=30):
         if "highlight" in hit and "text" in hit["highlight"]:
             highlighted_text = hit["highlight"]["text"][0]
 
+        highlighted_title = None
+        if "highlight" in hit and "video_title" in hit["highlight"]:
+            highlighted_title = hit["highlight"]["video_title"][0]
+
         results.append(
             {
                 "score": hit["_score"],
@@ -69,6 +100,7 @@ def search_transcripts(query, index_name, size=30):
                 "end_seconds": src["end_seconds"],
                 "text": src["text"],
                 "highlighted_text": highlighted_text,
+                "highlighted_title": highlighted_title,
                 "url": url,
                 "video_title": src["video_title"],
             }
