@@ -192,7 +192,10 @@ if __name__ == "__main__":
                         "analyzer": "my_english",
                         "fields": {"exact": {"type": "text", "analyzer": "standard"}},
                     },
-                    "video_title": {"type": "keyword"},
+                    "video_title": {
+                        "type": "text",
+                        "analyzer": "my_english",
+                    },
                 }
             },
         },
