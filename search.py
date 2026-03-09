@@ -80,7 +80,7 @@ def search_transcripts(query, index_name, size=30):
 def search():
     query = request.args.get("q", "").strip()
     index_name = request.args.get("index", "").strip()
-    size = request.args.get("size", default=30, type=int)
+    size = request.args.get("size", default=10, type=int)
 
     if not query:
         return jsonify({"error": "Missing query parameter: q"}), 400
