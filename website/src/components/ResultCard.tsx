@@ -68,10 +68,17 @@ export default function ResultCard({ result, thumbnail }: ResultCardProps) {
                 </div>
 
                 <div className="p-4">
+                    <h2
+                        className="mb-2 truncate px-1 font-bold text-zinc-200"
+                        title={result.video_title}
+                    >
+                        {result.video_title}
+                    </h2>
                     <div className="mb-3 flex items-center justify-between gap-3 text-xs text-zinc-400">
                         <span className="rounded-full border border-zinc-700 px-2 py-1">
                             Score {result.score.toFixed(2)}
                         </span>
+
                         <span>{result.start_time}</span>
                     </div>
 

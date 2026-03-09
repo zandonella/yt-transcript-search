@@ -192,6 +192,7 @@ if __name__ == "__main__":
                         "analyzer": "my_english",
                         "fields": {"exact": {"type": "text", "analyzer": "standard"}},
                     },
+                    "video_title": {"type": "keyword"},
                 }
             },
         },
@@ -204,8 +205,14 @@ if __name__ == "__main__":
         if not transcript_file.endswith(".en.vtt"):
             continue
         print(f"\nTranscript file: {transcript_file}")
-        video_id = re.search(r"\[([^\[\]]+)\]\.en\.vtt$", transcript_file).group(1)
+        match = re.search(r"^(.*?)\s*\[([^\[\]]+)\]\.en\.vtt$", transcript_file)
+        if not match:
+            continue
+
+        video_name = match.group(1)
+        video_id = match.group(2)
         print(f"Video ID: {video_id}")
+        print(f"Video Name: {video_name}")
 
         fixed_subtitle = fix_youtube_vtt(TRANSCRIPT_DIR / transcript_file)
 
@@ -230,6 +237,7 @@ if __name__ == "__main__":
                     "start_seconds": chunk["start_seconds"],
                     "end_seconds": chunk["end_seconds"],
                     "text": chunk["text"],
+                    "video_title": video_name,
                 },
             }
             actions.append(action)

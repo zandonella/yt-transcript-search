@@ -12,6 +12,7 @@ export interface SearchResult {
     text: string;
     highlighted_text?: string;
     url: string;
+    video_title: string;
 }
 
 interface SearchResponse {

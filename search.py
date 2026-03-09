@@ -54,12 +54,11 @@ def search_transcripts(query, index_name, size=30):
         src = hit["_source"]
         t = int(src["start_seconds"])
         url = f"https://youtube.com/watch?v={src['video_id']}&t={t}s"
-        
+
         highlighted_text = None
         if "highlight" in hit and "text" in hit["highlight"]:
             highlighted_text = hit["highlight"]["text"][0]
-        
-        
+
         results.append(
             {
                 "score": hit["_score"],
@@ -71,6 +70,7 @@ def search_transcripts(query, index_name, size=30):
                 "text": src["text"],
                 "highlighted_text": highlighted_text,
                 "url": url,
+                "video_title": src["video_title"],
             }
         )
     return results
