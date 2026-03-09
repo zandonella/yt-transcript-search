@@ -97,7 +97,7 @@ export default function App() {
 
                 {count !== null && !error && (
                     <div className="mb-6 text-sm text-zinc-400">
-                        Found{' '}
+                        Showing top{' '}
                         <span className="font-semibold text-zinc-200">
                             {count}
                         </span>{' '}
