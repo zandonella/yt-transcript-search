@@ -35,6 +35,16 @@ def search_transcripts(query, index_name, size=30):
                 ]
             }
         },
+        "highlight": {
+            "pre_tags": ["<hl>"],
+            "post_tags": ["</hl>"],
+            "fields": {
+                "text": {
+                    "number_of_fragments": 1,
+                    "fragment_size": 160,
+                }
+            },
+        },
     }
 
     response = client.search(index=index_name, body=search_body)
@@ -44,6 +54,12 @@ def search_transcripts(query, index_name, size=30):
         src = hit["_source"]
         t = int(src["start_seconds"])
         url = f"https://youtube.com/watch?v={src['video_id']}&t={t}s"
+        
+        highlighted_text = None
+        if "highlight" in hit and "text" in hit["highlight"]:
+            highlighted_text = hit["highlight"]["text"][0]
+        
+        
         results.append(
             {
                 "score": hit["_score"],
@@ -53,6 +69,7 @@ def search_transcripts(query, index_name, size=30):
                 "start_seconds": src["start_seconds"],
                 "end_seconds": src["end_seconds"],
                 "text": src["text"],
+                "highlighted_text": highlighted_text,
                 "url": url,
             }
         )

@@ -10,6 +10,7 @@ export interface SearchResult {
     start_seconds: number;
     end_seconds?: number;
     text: string;
+    highlighted_text?: string;
     url: string;
 }
 

@@ -6,7 +6,47 @@ interface ResultCardProps {
     thumbnail: string;
 }
 
+function renderHighlightedText(text: string) {
+    const parts = text.split(/(<hl>|<\/hl>)/g);
+
+    const result: React.ReactNode[] = [];
+    let isHighlighted = false;
+    let key = 0;
+
+    for (const part of parts) {
+        if (part === '<hl>') {
+            isHighlighted = true;
+            continue;
+        }
+
+        if (part === '</hl>') {
+            isHighlighted = false;
+            continue;
+        }
+
+        if (!part) continue;
+
+        if (isHighlighted) {
+            result.push(
+                <mark
+                    key={key++}
+                    className="rounded bg-yellow-300/90 px-1 text-black"
+                >
+                    {part}
+                </mark>,
+            );
+        } else {
+            result.push(<span key={key++}>{part}</span>);
+        }
+    }
+
+    return result;
+}
+
 export default function ResultCard({ result, thumbnail }: ResultCardProps) {
+    const highlightedText = renderHighlightedText(
+        result.highlighted_text || result.text,
+    );
     return (
         <>
             <a
@@ -36,13 +76,13 @@ export default function ResultCard({ result, thumbnail }: ResultCardProps) {
                     </div>
 
                     <p className="mb-4 line-clamp-5 text-sm leading-6 text-zinc-200">
-                        {result.text}
+                        {highlightedText}
                     </p>
 
                     <div className="flex items-center justify-between text-xs text-zinc-500">
                         <span className="truncate">{result.video_id}</span>
                         <span className="flex items-center font-medium text-zinc-300 group-hover:text-white">
-                            Watch <LuArrowRight size={24} className="inline" />
+                            Watch <LuArrowRight size={16} className="inline" />
                         </span>
                     </div>
                 </div>
