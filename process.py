@@ -108,7 +108,7 @@ def clean_text(text):
     return text.strip()
 
 
-def chunk_captions(captions, max_s=15, overlap_s=5):
+def chunk_captions(captions, max_s=12, overlap_s=2):
     """Chunks captions into segments of max_s seconds, with overlap_s seconds of overlap"""
     chunks = []
     current_chunk = []
@@ -141,16 +141,16 @@ def chunk_captions(captions, max_s=15, overlap_s=5):
 
             chunks.append(chunk)
             # start new chunk with overlap
-            current_chunk_start = caption_start_s - overlap_s
-            if current_chunk_start < 0:
-                current_chunk_start = 0.0
-            current_chunk_end = caption_end_s
+            overlap_boundary = max(0.0, caption_start_s - overlap_s)
+
             new_starting_chunk = []
             for c in current_chunk:
-                if ts_to_seconds(c.end) > current_chunk_start:
+                if ts_to_seconds(c.end) > overlap_boundary:
                     new_starting_chunk.append(c)
 
             current_chunk = new_starting_chunk + [caption]
+            current_chunk_start = ts_to_seconds(current_chunk[0].start)
+            current_chunk_end = max(ts_to_seconds(c.end) for c in current_chunk)
 
     # add the final chunk if it exists
     if current_chunk:
