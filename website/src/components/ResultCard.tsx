@@ -47,6 +47,9 @@ export default function ResultCard({ result, thumbnail }: ResultCardProps) {
     const highlightedText = renderHighlightedText(
         result.highlighted_text || result.text,
     );
+    const title = renderHighlightedText(
+        result.highlighted_title || result.video_title,
+    );
     return (
         <>
             <a
@@ -72,7 +75,7 @@ export default function ResultCard({ result, thumbnail }: ResultCardProps) {
                         className="mb-2 truncate px-1 font-bold text-zinc-200"
                         title={result.video_title}
                     >
-                        {result.video_title}
+                        {title}
                     </h2>
                     <div className="mb-3 flex items-center justify-between gap-3 text-xs text-zinc-400">
                         <span className="rounded-full border border-zinc-700 px-2 py-1">

@@ -11,6 +11,7 @@ export interface SearchResult {
     end_seconds?: number;
     text: string;
     highlighted_text?: string;
+    highlighted_title?: string;
     url: string;
     video_title: string;
 }
