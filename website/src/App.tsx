@@ -39,6 +39,11 @@ export default function App() {
     async function handleSearch(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
+        if (!indexName.trim() || !query.trim()) {
+            setError('Please enter both index name and search query.');
+            return;
+        }
+
         setLoading(true);
         setError('');
 
