@@ -1,7 +1,6 @@
-import json
 import os
 import re
-import string
+import time
 import webvtt
 import html
 from pathlib import Path
@@ -170,7 +169,7 @@ def chunk_captions(captions, max_s=12, overlap_s=2):
 if __name__ == "__main__":
     path = input("Enter the path to the directory containing the transcripts: ")
     name = input("Enter the name of the collection: ")
-
+    start_time = time.time()
     # Elasticsearch setup
     INDEX_NAME = name.replace(" ", "_").lower()
     if client.indices.exists(index=INDEX_NAME):
@@ -204,6 +203,8 @@ if __name__ == "__main__":
     transcripts = os.listdir(path)
     TRANSCRIPT_DIR = Path(path)
 
+    total_chunks = 0
+
     for transcript_file in transcripts:
         if not transcript_file.endswith(".en.vtt"):
             continue
@@ -222,6 +223,7 @@ if __name__ == "__main__":
         captions = list(webvtt.from_string(fixed_subtitle))
         chunks = chunk_captions(captions)
         print(f"Chunked into {len(chunks)} segments")
+        total_chunks += len(chunks)
         # print("chunks:")
         # for chunk in chunks:
         #     print(f"  Start: {chunk['start_time']}, End: {chunk['end_time']}")
@@ -248,3 +250,7 @@ if __name__ == "__main__":
     print(
         f"\nFinished processing {len(transcripts)} transcripts into index '{INDEX_NAME}'"
     )
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time:.2f} seconds")
+    print(f"Total chunks: {total_chunks}")
