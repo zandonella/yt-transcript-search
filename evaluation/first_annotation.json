@@ -1692,7 +1692,7 @@
                 "video_id": "slYh0ZNEqSw",
                 "video_title": "Online Stock Span - Leetcode 901 - Python",
                 "rank": 8,
-                "relevance": 2
+                "relevance": 1
             },
             {
                 "end_seconds": 33.76,
@@ -1774,7 +1774,7 @@
                 "video_id": "gqXU1UyA8pk",
                 "video_title": "Longest Repeating Character Replacement - Leetcode 424 - Python",
                 "rank": 3,
-                "relevance": 2
+                "relevance": 1
             },
             {
                 "end_seconds": 77.439,
@@ -1789,7 +1789,7 @@
                 "video_id": "gqXU1UyA8pk",
                 "video_title": "Longest Repeating Character Replacement - Leetcode 424 - Python",
                 "rank": 4,
-                "relevance": 2
+                "relevance": 1
             },
             {
                 "end_seconds": 1036.88,
@@ -1819,7 +1819,7 @@
                 "video_id": "gqXU1UyA8pk",
                 "video_title": "Longest Repeating Character Replacement - Leetcode 424 - Python",
                 "rank": 6,
-                "relevance": 2
+                "relevance": 1
             },
             {
                 "end_seconds": 1027.039,
@@ -1901,7 +1901,7 @@
                 "video_id": "pNichitDD2E",
                 "video_title": "Design Twitter - Leetcode 355 - Python",
                 "rank": 1,
-                "relevance": 2
+                "relevance": 1
             },
             {
                 "end_seconds": 16.08,
@@ -1991,7 +1991,7 @@
                 "video_id": "pNichitDD2E",
                 "video_title": "Design Twitter - Leetcode 355 - Python",
                 "rank": 7,
-                "relevance": 2
+                "relevance": 1
             },
             {
                 "end_seconds": 16.32,
@@ -2006,7 +2006,7 @@
                 "video_id": "pNichitDD2E",
                 "video_title": "Design Twitter - Leetcode 355 - Python",
                 "rank": 8,
-                "relevance": 1
+                "relevance": 0
             },
             {
                 "end_seconds": 25.76,
@@ -2058,7 +2058,7 @@
                 "video_id": "gs2LMfuOR9k",
                 "video_title": "Lowest Common Ancestor of a Binary Search Tree - Leetcode 235 - Python",
                 "rank": 1,
-                "relevance": 1
+                "relevance": 2
             },
             {
                 "end_seconds": 64.4,
