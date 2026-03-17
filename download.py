@@ -1,11 +1,8 @@
-import os
 import time
 from pathlib import Path
 from yt_dlp import YoutubeDL
 
 TRANSCRIPT_DIR = Path("transcripts")
-TRANSCRIPT_DIR.mkdir(exist_ok=True)
-
 
 def download_transcripts_for_videos(playlist_url):
     out_path = Path(TRANSCRIPT_DIR)
