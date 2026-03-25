@@ -4,8 +4,7 @@ Search YouTube video transcripts with Elasticsearch and open results directly at
 
 This project downloads English subtitles from a YouTube playlist, cleans and chunks the transcripts, indexes them into Elasticsearch, and provides a small search API plus a React frontend for querying results.
 
-<!-- Add a screenshot or GIF here -->
-<!-- ![Demo](./assets/demo.png) -->
+![Visual of site](./images/yt-search.png)
 
 ## Why this exists
 
